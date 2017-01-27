@@ -25,20 +25,6 @@ make
 make install
 
 cd ${SOURCE_DIR}
-git clone --depth 1 git://git.videolan.org/x264
-cd x264
-PKG_CONFIG_PATH="${BUILD_DIR}/lib/pkgconfig" ./configure --prefix="${BUILD_DIR}" --bindir="${INSTALL_DIR}/bin" --enable-static
-make
-make install
-
-cd ${SOURCE_DIR}
-hg clone https://bitbucket.org/multicoreware/x265
-cd ~/ffmpeg_sources/x265/build/linux
-cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="${BUILD_DIR}" -DENABLE_SHARED:bool=off ../../source
-make
-make install
-
-cd ${SOURCE_DIR}
 git clone --depth 1 git://git.code.sf.net/p/opencore-amr/fdk-aac
 cd fdk-aac
 autoreconf -fiv
@@ -79,6 +65,14 @@ make
 make install
 
 cd ${SOURCE_DIR}
+git clone https://git.xiph.org/theora.git #does not support depth
+cd theora
+./autogen.sh
+./configure --prefix="${BUILD_DIR}" --disable-shared
+make
+make install
+
+cd ${SOURCE_DIR}
 git clone --depth 1 https://chromium.googlesource.com/webm/libvpx.git
 cd libvpx
 ./configure --prefix="${BUILD_DIR}" --disable-examples
@@ -86,10 +80,26 @@ make
 make install
 
 cd ${SOURCE_DIR}
+git clone --depth 1 https://github.com/cisco/openh264.git
+cd openh264
+sed -i -e "s|PREFIX=/usr/local|PREFIX=${BUILD_DIR}|" Makefile
+make
+make install
+
+cd ${SOURCE_DIR}
 curl -O http://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2
 tar xjvf ffmpeg-snapshot.tar.bz2
 cd ffmpeg
-PKG_CONFIG_PATH="${BUILD_DIR}/lib/pkgconfig" ./configure --prefix="${BUILD_DIR}" --extra-cflags="-I${BUILD_DIR}/include" --extra-ldflags="-L${BUILD_DIR}/lib -ldl" --bindir="${INSTALL_DIR}/bin" --pkg-config-flags="--static" --enable-gpl --enable-nonfree --enable-libfdk_aac --enable-libfreetype --enable-libmp3lame --enable-libopus --enable-libvorbis --enable-libvpx --enable-libx264 --enable-libx265
+PKG_CONFIG_PATH="${BUILD_DIR}/lib/pkgconfig" ./configure --prefix="${BUILD_DIR}" --extra-cflags="-I${BUILD_DIR}/include" --extra-ldflags="-L${BUILD_DIR}/lib -ldl" --bindir="${INSTALL_DIR}/bin" --pkg-config-flags="--static" \
+--enable-libfdk_aac \
+--enable-libfreetype \
+--enable-libmp3lame \
+--enable-libopus \
+--enable-libtheora \
+--enable-libvorbis \
+--enable-libvpx \
+--enable-libopenh264
+
 make
 make install
 
